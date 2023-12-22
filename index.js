@@ -28,24 +28,37 @@ async function run() {
     // await client.connect();
 
     const userCollection = client.db("manageDB").collection("users");
+    const taskCollection = client.db("manageDB").collection("tasks");
 
     app.get('/users', async (req, res) => {
-        const result = await userCollection.find().toArray();
-        res.send(result);
-      });
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get('/task', async (req, res) => {
+      const result = await taskCollection.find().toArray();
+      res.send(result);
+    });
 
 
 
     app.post('/users', async (req, res) => {
-        const user = req.body;
-        const query = { email: user.email }
-        const existingUser = await userCollection.findOne(query);
-        if (existingUser) {
-          return res.send({ message: 'user already exists', insertedId: null })
-        }
-        const result = await userCollection.insertOne(user);
-        res.send(result);
-      });
+      const user = req.body;
+      const query = { email: user.email }
+      const existingUser = await userCollection.findOne(query);
+      if (existingUser) {
+        return res.send({ message: 'user already exists', insertedId: null })
+      }
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+
+
+    app.post('/createTask', async (req, res) => {
+      const taskItem = req.body;
+      const result = await taskCollection.insertOne(taskItem);
+      res.send(result);
+    });
 
 
 
@@ -63,9 +76,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('server is running')
+  res.send('server is running')
 })
 
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 })
